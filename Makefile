@@ -4,7 +4,7 @@ CWARN=-Wall -Wextra -pedantic
 CEXTRA=-g
 
 CFLAGS=$(CSTD) $(CWARN) $(CEXTRA)
-LDFLAGS=-lgnutls -lopendht -lreadline
+LDFLAGS=-lgnutls -lopendht -lreadline -pthread
 
 EXEC=dhtpim
 
