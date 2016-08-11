@@ -3,22 +3,14 @@
 #include <iostream>
 #include <unordered_map>
 
-#include <readline/readline.h>
-#include <readline/history.h>
-
 #include <opendht.h>
 
+#include "cli_tools.hpp"
 #include "keychain.hpp"
 #include "tools.hpp"
 #include "msg.hpp"
 
 template<size_t pool_size, size_t period> struct keychain_tracker;
-
-// Nice display with VT100 terminal control escape sequences.
-void disp(std::string content);
-
-// Use GNU readline.
-std::string input(const std::string& prompt);
 
 // Follow and listen a moving keychain.
 template<size_t pool_size, size_t period = 60000>
@@ -160,22 +152,3 @@ int main(int argc, char** argv)
     node.join();
     return 0;
 }
-
-void disp(std::string content)
-{
-    std::cout << "\r\n"
-    "\x1b[A\x1b[A " << content << "\n"
-    "\x1b[2K" << std::endl;
-}
-
-std::string input(const std::string& prompt)
-{
-    const char* line = readline(prompt.c_str());
-    if(line && *line)
-        add_history(line);
-
-    if(line)
-        return std::string(line);
-    return std::string("");
-}
-

@@ -10,8 +10,11 @@ EXEC=dhtpim
 
 all: $(EXEC)
 
-dhtpim: tools
+dhtpim: cli_tools tools
 	$(CC) $(LDFLAGS) $(CFLAGS) *.o dhtpim.cpp -o dhtpim
+
+cli_tools:
+	$(CC) $(CFLAGS) -c cli_tools.cpp
 
 tools:
 	$(CC) $(CFLAGS) -c tools.cpp
