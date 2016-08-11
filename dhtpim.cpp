@@ -14,17 +14,11 @@
 
 template<size_t pool_size, size_t period> struct keychain_tracker;
 
-// Map type used for message deduplication.
-using map_type = std::unordered_map<std::string, std::chrono::milliseconds>;
-
 // Nice display with VT100 terminal control escape sequences.
 void disp(std::string content);
 
 // Use GNU readline.
 std::string input(const std::string& prompt);
-
-// Start listenning to statefull keychain.
-size_t listen(dht::DhtRunner& node, std::string chain, map_type& map);
 
 // Follow and listen a moving keychain.
 template<size_t pool_size, size_t period = 60000>
@@ -185,34 +179,3 @@ std::string input(const std::string& prompt)
     return std::string("");
 }
 
-size_t listen(dht::DhtRunner& node, std::string chain, map_type& map)
-{
-    std::future<size_t> token = node.listen(chain,
-        [&map](const std::vector<std::shared_ptr<dht::Value>>& values)
-        {
-            // For every value found...
-            for (const auto& value : values)
-            {
-                // Unpack then register and display it, if it's a new value.
-                std::string content = value->unpack<std::string>();
-                if(!map.count(content))
-                {
-                    map.insert(std::make_pair(content, get_timestamp()));
-                    disp(content);
-                }
-            }
-
-            // Continue lookup until no values are left.
-            return true;
-        });
-
-    if(token.wait_for(std::chrono::seconds(1)) != std::future_status::ready)
-        exit(1);
-
-    auto v = token.get();
-//    disp("Starting listening to "
-//    + chain
-//    + " with token "
-//    + std::to_string(v));
-    return v;
-}
