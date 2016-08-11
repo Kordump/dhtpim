@@ -9,8 +9,8 @@
 #include <opendht.h>
 
 #include "tools.hpp"
+#include "msg.hpp"
 
-struct msg;
 template<size_t period> struct channel;
 template<size_t pool_size, size_t period> struct dhost;
 
@@ -25,21 +25,6 @@ std::string input(const std::string& prompt);
 
 // Start listenning to statefull channel.
 size_t listen(dht::DhtRunner& node, std::string chan, map_type& map);
-
-// Simple format for our messages.
-struct msg : public std::string
-{
-    msg(std::string username, std::string text)
-        : std::string(
-            "[" + std::to_string(get_timestamp().count()) + "]"
-            " <" + username + "> " + text)
-    { };
-
-    operator dht::Value()
-    {
-        return dht::Value::pack(std::string(*this));
-    }
-};
 
 // A channel, a « moving » InfoHash key.
 template<size_t period = 60000>
