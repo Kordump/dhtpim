@@ -8,9 +8,9 @@ LDFLAGS=-lgnutls -lopendht -lreadline -pthread
 
 EXEC=dhtpim
 
-all: $(EXEC)
+all: genopt $(EXEC)
 
-dhtpim: io_tools tools
+dhtpim: io_tools tools opt
 	$(CC) $(LDFLAGS) $(CFLAGS) *.o dhtpim.cpp -o dhtpim
 
 io_tools:
@@ -19,7 +19,17 @@ io_tools:
 tools:
 	$(CC) $(CFLAGS) -c tools.cpp
 
-clean:
+opt:
+	$(CC) $(CFLAGS) -c opt.cpp
+
+genopt:
+	gengetopt -i dhtpim.ggo
+	gcc -c cmdline.c
+
+clean-genopt:
+	rm -v -f cmdline.h cmdline.c
+
+clean: clean-genopt
 	rm -v -f *.o *.gch *.gch.*
 
 mr_proper: clean
