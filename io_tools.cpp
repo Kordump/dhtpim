@@ -1,10 +1,19 @@
 #include "io_tools.hpp"
 
-void disp(std::string content)
+void disp(std::string content, std::ostream& stream)
 {
-    std::cout << "\r\n"
-    "\x1b[A\x1b[A " << content << "\n"
-    "\x1b[2K" << std::endl;
+    if(opt::args().interactive_flag)
+        stream << "\r\n"
+        "\x1b[A\x1b[A " << content << "\n"
+        "\x1b[2K" << std::endl;
+    else
+        stream << content << std::endl;
+}
+
+void verbose(std::string content)
+{
+    if(opt::args().verbose_flag)
+        disp(content, std::cerr);
 }
 
 std::string input(const std::string& prompt)
@@ -14,24 +23,19 @@ std::string input(const std::string& prompt)
         add_history(line);
 
     if(line)
+    {
+        if(opt::args().interactive_flag)
+            std::cout << "\x1b[A\x1b[2K\r";
+
         return std::string(line);
-    return std::string("");
+    } else {
+        return std::string("/quit");
+    }
 }
 
 void io_init()
 {
     // Use GNU readline history.
     using_history();
-}
-
-void usage(const char* command_line)
-{
-    std::cout
-        << "Usage : "                                           "\n"
-        << " - " << command_line << " <host> <port>"            "\n"
-        << "   - <host>: Host of the bootstrap node."           "\n"
-        << "   - <port>: Port of the bootstrap node."           "\n"
-        << " - " << command_line << " bootstrap.ring.cx 4222"   "\n"
-        << std::endl;
 }
 

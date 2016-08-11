@@ -6,16 +6,18 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-// Nice display with VT100 terminal control escape sequences.
-void disp(std::string content);
+#include "opt.hpp"
+
+// Output interactive or unformatted output on stream.
+void disp(std::string content, std::ostream& stream = std::cout);
+
+// Verbose output.
+void verbose(std::string content);
 
 // Use GNU readline.
-std::string input(const std::string& prompt);
+std::string input(const std::string& prompt = "");
 
 // Init GNU readline.
 void io_init();
-
-// Display usage.
-void usage(const char* command_line);
 
 #endif

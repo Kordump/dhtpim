@@ -52,7 +52,6 @@ int main(int argc, char** argv)
 
     // Setup keychain
     keychain<> chain(chainame, password);
-    std::cout << "\n";
 
     // Pack&Put data on the DHT.
     node.putSigned(chain, msg(username, "Enter the chatroom."));
@@ -63,24 +62,31 @@ int main(int argc, char** argv)
     // Read stdin and put messages on the DHT.
     for(;;)
     {
-        std::string output = input("");
-        std::cout << "\x1b[A\x1b[2K\r";
+        std::string output = input();
 
-        if(!output.empty())
-        {
-            // Insert the message in the DHT.
-            auto content = msg(username, output);
-            node.putSigned(chain, content);
+        if(output.empty())
+            continue;
+        if(output.substr(0, 6) == "/quit")
+            break;
+        if(output[0] == '/')
+            continue;
 
-            // Register-it locally and instant display.
-            auto stamp = get_timestamp();
-            map.insert(std::make_pair(msg(content), stamp));
-            disp(content);
-        }
+        // Insert the message in the DHT.
+        auto content = msg(username, output);
+        node.putSigned(chain, content);
+
+        // Register-it locally and instant display.
+        auto stamp = get_timestamp();
+        map.insert(std::make_pair(msg(content), stamp));
+        disp(content);
     }
 
     // Wait threads
+    verbose("Stopping...");
     tracker.join();
     node.join();
+
+    // Bye !
+    verbose("Bye !");
     return 0;
 }
