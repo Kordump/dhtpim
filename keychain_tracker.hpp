@@ -8,6 +8,8 @@
 #include "keychain.hpp"
 #include "tools.hpp"
 
+constexpr size_t wakeup_interval = 500;
+
 // Follow and listen a moving keychain.
 template<size_t pool_size, size_t period = 60000>
 struct keychain_tracker
@@ -30,52 +32,81 @@ struct keychain_tracker
         this->holder = std::make_unique<std::thread>(
             [this]()
             {
-                disp("Starting keychain tracking thread...");
+                verbose("Starting keychain tracking thread...");
+
                 while(this->hold())
                 {
+                    // Update the keychain tracker to the next period.
+                    size_t last_update = get_timestamp().count();
                     this->update();
-                    std::this_thread::sleep_for(
-                        std::chrono::milliseconds(period));
+
+                    // Wakes up often, but wait for the next period.
+                    while(this->hold()
+                        && get_timestamp().count() - last_update < period)
+                    {
+                        std::this_thread::sleep_for(
+                            std::chrono::milliseconds(wakeup_interval));
+                    }
                 }
 
                 return;
             });
     }
 
+    // Holding getter : Is this keychain tracker holding an alive thread ?
     bool hold() const
     {
         return holding;
     }
 
+    // Terminate the holded thread and cleanup listeners.
     void join()
     {
-        if(this->holding)
+        if(holding)
         {
-            this->holding = false;
+            // Cleanup tracker thread.
+            holding = false;
             this->holder->join();
+
+            // Cleanup listeners.
+            for(size_t i = 0; i < pool_size; ++i)
+                cancel(i);
         }
     }
 
+    // Destructor.
     ~keychain_tracker()
     {
         join();
     }
 
 private:
+
+    // Update the keychain tracker to the next period.
     void update(size_t ahead_of = period)
     {
+        // Setup a fresh listener for the next period.
         auto target = chain.ahead(ahead_of);
         tokens[cursor] = std::make_pair(listen(node, target, map), target);
 
+        // CancelListen the oldest listener.
         auto next_cursor = (cursor + 1) % pool_size;
-        if(tokens[next_cursor].first)
-            node.cancelListen(
-                dht::InfoHash(tokens[next_cursor].second),
-                tokens[next_cursor].first);
+        cancel(next_cursor);
 
+        // Update cursor.
         next_cursor = cursor;
     }
 
+    // CancelListen the target listener.
+    void cancel(size_t cursor)
+    {
+        if(tokens[cursor].first)
+            node.cancelListen(
+                dht::InfoHash(tokens[cursor].second),
+                tokens[cursor].first);
+    }
+
+private:
     bool holding = false;
     std::unique_ptr<std::thread> holder;
 
