@@ -13,18 +13,12 @@ int main(int argc, char** argv)
 {
     if(argc != 3)
     {
-        std::cout
-            << "Usage : "                                       "\n"
-            << " - " << argv[0] << " <host> <port>"             "\n"
-            << "   - <host>: Host of the bootstrap node."       "\n"
-            << "   - <port>: Port of the bootstrap node."       "\n"
-            << " - " << argv[0] << " bootstrap.ring.cx 4222"    "\n"
-            << std::endl;
+        usage(argv[0]);
         return 1;
     }
 
-    // Use GNU readline history.
-    using_history();
+    // Init io-related stuff.
+    io_init();
 
     // Create an unordered_map, for messages deduplication.
     map_type map;

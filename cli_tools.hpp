@@ -12,4 +12,10 @@ void disp(std::string content);
 // Use GNU readline.
 std::string input(const std::string& prompt);
 
+// Init GNU readline.
+void io_init();
+
+// Display usage.
+void usage(const char* command_line);
+
 #endif

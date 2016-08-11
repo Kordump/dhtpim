@@ -18,3 +18,20 @@ std::string input(const std::string& prompt)
     return std::string("");
 }
 
+void io_init()
+{
+    // Use GNU readline history.
+    using_history();
+}
+
+void usage(const char* command_line)
+{
+    std::cout
+        << "Usage : "                                           "\n"
+        << " - " << command_line << " <host> <port>"            "\n"
+        << "   - <host>: Host of the bootstrap node."           "\n"
+        << "   - <port>: Port of the bootstrap node."           "\n"
+        << " - " << command_line << " bootstrap.ring.cx 4222"   "\n"
+        << std::endl;
+}
+
