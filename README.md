@@ -3,7 +3,7 @@
 Simple OpenDHT private instant messaging.
 
 ```
-Usage: ./dhtpim -u <username> -k <keychain> [-p <password>]
+Usage: ./dhtpim -u <username> -c <keychain> [-p <password>]
 
   -h, --help                   Print help and exit
   -V, --version                Print version and exit

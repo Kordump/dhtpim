@@ -1,7 +1,7 @@
 package "dhtpim"
 version "0.0.1"
 purpose "Simple OpenDHT private instant messaging."
-usage "./dhtpim -u <username> -k <keychain> [-p <password>]"
+usage "./dhtpim -u <username> -c <channel> [-p <password>]"
 
 option  "verbose"         v         "Verbose mode\
 "       flag              off
