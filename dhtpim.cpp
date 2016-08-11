@@ -8,10 +8,10 @@
 
 #include <opendht.h>
 
+#include "keychain.hpp"
 #include "tools.hpp"
 #include "msg.hpp"
 
-template<size_t period> struct keychain;
 template<size_t pool_size, size_t period> struct dhost;
 
 // Map type used for message deduplication.
@@ -25,39 +25,6 @@ std::string input(const std::string& prompt);
 
 // Start listenning to statefull keychain.
 size_t listen(dht::DhtRunner& node, std::string chain, map_type& map);
-
-// A keychain, a « moving » InfoHash key.
-template<size_t period = 60000>
-struct keychain
-{
-    keychain(std::string name, std::string salt = "")
-        : name("#" + name + "-" + salt)
-    { };
-
-    std::string ahead(std::chrono::milliseconds from_time) const
-    {
-        auto stamp = (get_timestamp() + from_time).count();
-        stamp = stamp / period;
-
-        // The chain move to a new InfoHash every period.
-        return name + "-" + std::to_string(stamp);
-    }
-
-    std::string ahead(int from_time) const
-    {
-        return ahead(std::chrono::milliseconds(from_time));
-    }
-
-
-    operator std::string() const
-    {
-        // Referring to « chain » refer to present chain.
-        return ahead(0);
-    }
-
-private:
-    std::string name;
-};
 
 // Follow and listen a moving keychain.
 template<size_t pool_size, size_t period = 60000>
