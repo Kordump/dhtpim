@@ -12,7 +12,7 @@ option  "interactive"     i         "Interactive mode\
 option  "username"        u         "Username\
 "       string            required
 
-option  "keychain"        k         "Channel to join\
+option  "keychain"        c         "Channel to join\
 "       string            required
 
 option  "password"        p         "Channel password\
