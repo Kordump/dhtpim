@@ -1,21 +1,12 @@
 package "dhtpim"
 version "0.0.1"
 purpose "Simple OpenDHT private instant messaging."
-usage "./dhtpim -u <username> -k <keychain>"
-
-option  "bootstrap-host"  b         "Remote bootstrap node\
-"       string            optional  default="bootstrap.ring.cx"
-
-option  "bootstrap-port"  r         "Remote bootstrap port\
-"       int               optional  default="4222"
-
-option  "port"            l         "Force local node port\
-"       int               optional  default="0"
-
-option  "interactive"     i         "Interactive mode\
-"       flag              off
+usage "./dhtpim -u <username> -k <keychain> [-p <password>]"
 
 option  "verbose"         v         "Verbose mode\
+"       flag              off
+
+option  "interactive"     i         "Interactive mode\
 "       flag              off
 
 option  "username"        u         "Username\
@@ -26,4 +17,13 @@ option  "keychain"        k         "Channel to join\
 
 option  "password"        p         "Channel password\
 "       string            optional
+
+option  "port"            l         "Force local node port\
+"       int               optional  default="0"
+
+option  "bootstrap-port"  r         "Remote bootstrap port\
+"       int               optional  default="4222"
+
+option  "bootstrap-host"  b         "Remote bootstrap node\
+"       string            optional  default="bootstrap.ring.cx"
 

@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     auto node_identity = dht::crypto::generateIdentity();
 
     // Run a node with a free port (0), use a separate thread.
-    node.run(0, node_identity, true);
+    node.run(opt::args().port_arg, node_identity, true);
 
     // Join the network through an already known node.
     node.bootstrap(
