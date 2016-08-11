@@ -30,7 +30,7 @@ size_t listen(dht::DhtRunner& node, std::string chan, map_type& map);
 // Simple format for our messages.
 struct msg : public std::string
 {
-    msg(std::string text)
+    msg(std::string username, std::string text)
         : std::string(
             "[" + std::to_string(get_timestamp().count()) + "]"
             " <" + username + "> " + text)
@@ -40,10 +40,7 @@ struct msg : public std::string
     {
         return dht::Value::pack(std::string(*this));
     }
-
-    static std::string username;
 };
-std::string msg::username;
 
 // A channel, a « moving » InfoHash key.
 template<size_t period = 60000>
@@ -185,12 +182,12 @@ int main(int argc, char** argv)
     node.bootstrap(argv[1], argv[2]);
 
     // User settings.
-    msg::username = input("Username : ");
+    std::string username = input("Username : ");
     channel<> chan(input("Channel : "), input("Password : "));
     std::cout << "\n";
 
     // Pack&Put data on the DHT.
-    node.putSigned(chan, msg("Enter the chatroom."));
+    node.putSigned(chan, msg(username, "Enter the chatroom."));
 
     // Watch for incoming new messages.
     dhost<5> listener(node, chan, map);
@@ -204,7 +201,7 @@ int main(int argc, char** argv)
         if(!output.empty())
         {
             // Insert the message in the DHT.
-            auto content = msg(output);
+            auto content = msg(username, output);
             node.putSigned(chan, content);
 
             // Register-it locally and instant display.
