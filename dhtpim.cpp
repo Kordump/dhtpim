@@ -12,7 +12,7 @@
 #include "tools.hpp"
 #include "msg.hpp"
 
-template<size_t pool_size, size_t period> struct dhost;
+template<size_t pool_size, size_t period> struct keychain_tracker;
 
 // Map type used for message deduplication.
 using map_type = std::unordered_map<std::string, std::chrono::milliseconds>;
@@ -28,15 +28,15 @@ size_t listen(dht::DhtRunner& node, std::string chain, map_type& map);
 
 // Follow and listen a moving keychain.
 template<size_t pool_size, size_t period = 60000>
-struct dhost
+struct keychain_tracker
 {
-    dhost(
+    keychain_tracker(
         dht::DhtRunner& node,
         const keychain<period>& chain,
         map_type& map)
     : node{node}, chain{chain}, map{map}
     {
-        // Reset listeners pool.
+        // Reset listener pool.
         for(size_t i = 0; i < pool_size; ++i)
             tokens[i].first = 0;
 
@@ -65,7 +65,7 @@ struct dhost
         return holding;
     }
 
-    ~dhost()
+    ~keychain_tracker()
     {
         if(this->holding)
         {
@@ -141,7 +141,7 @@ int main(int argc, char** argv)
     node.putSigned(chain, msg(username, "Enter the chatroom."));
 
     // Watch for incoming new messages.
-    dhost<5> listener(node, chain, map);
+    keychain_tracker<5> tracker(node, chain, map);
 
     // Read stdin and put messages on the DHT.
     for(;;)
