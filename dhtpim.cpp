@@ -11,7 +11,7 @@
 #include "tools.hpp"
 #include "msg.hpp"
 
-template<size_t period> struct channel;
+template<size_t period> struct keychain;
 template<size_t pool_size, size_t period> struct dhost;
 
 // Map type used for message deduplication.
@@ -23,14 +23,14 @@ void disp(std::string content);
 // Use GNU readline.
 std::string input(const std::string& prompt);
 
-// Start listenning to statefull channel.
-size_t listen(dht::DhtRunner& node, std::string chan, map_type& map);
+// Start listenning to statefull keychain.
+size_t listen(dht::DhtRunner& node, std::string chain, map_type& map);
 
-// A channel, a « moving » InfoHash key.
+// A keychain, a « moving » InfoHash key.
 template<size_t period = 60000>
-struct channel
+struct keychain
 {
-    channel(std::string name, std::string salt = "")
+    keychain(std::string name, std::string salt = "")
         : name("#" + name + "-" + salt)
     { };
 
@@ -39,7 +39,7 @@ struct channel
         auto stamp = (get_timestamp() + from_time).count();
         stamp = stamp / period;
 
-        // The chan move to a new InfoHash every period.
+        // The chain move to a new InfoHash every period.
         return name + "-" + std::to_string(stamp);
     }
 
@@ -51,7 +51,7 @@ struct channel
 
     operator std::string() const
     {
-        // Referring to « chan » refer to present chan.
+        // Referring to « chain » refer to present chain.
         return ahead(0);
     }
 
@@ -59,15 +59,15 @@ private:
     std::string name;
 };
 
-// Follow and listen a moving channel.
+// Follow and listen a moving keychain.
 template<size_t pool_size, size_t period = 60000>
 struct dhost
 {
     dhost(
         dht::DhtRunner& node,
-        const channel<period>& chan,
+        const keychain<period>& chain,
         map_type& map)
-    : node{node}, chan{chan}, map{map}
+    : node{node}, chain{chain}, map{map}
     {
         // Reset listeners pool.
         for(size_t i = 0; i < pool_size; ++i)
@@ -81,7 +81,7 @@ struct dhost
         this->holder = std::make_unique<std::thread>(
             [this]()
             {
-                disp("Starting channel tracking thread...");
+                disp("Starting keychain tracking thread...");
                 while(this->hold())
                 {
                     this->update();
@@ -110,7 +110,7 @@ struct dhost
 private:
     void update(size_t ahead_of = period)
     {
-        auto target = chan.ahead(ahead_of);
+        auto target = chain.ahead(ahead_of);
         tokens[cursor] = std::make_pair(listen(node, target, map), target);
 
         auto next_cursor = (cursor + 1) % pool_size;
@@ -129,7 +129,7 @@ private:
     std::array<std::pair<size_t, std::string>, pool_size> tokens;
 
     dht::DhtRunner& node;
-    const channel<period>& chan;
+    const keychain<period>& chain;
     map_type& map;
 };
 
@@ -167,14 +167,14 @@ int main(int argc, char** argv)
 
     // User settings.
     std::string username = input("Username : ");
-    channel<> chan(input("Channel : "), input("Password : "));
+    keychain<> chain(input("Channel : "), input("Password : "));
     std::cout << "\n";
 
     // Pack&Put data on the DHT.
-    node.putSigned(chan, msg(username, "Enter the chatroom."));
+    node.putSigned(chain, msg(username, "Enter the chatroom."));
 
     // Watch for incoming new messages.
-    dhost<5> listener(node, chan, map);
+    dhost<5> listener(node, chain, map);
 
     // Read stdin and put messages on the DHT.
     for(;;)
@@ -186,7 +186,7 @@ int main(int argc, char** argv)
         {
             // Insert the message in the DHT.
             auto content = msg(username, output);
-            node.putSigned(chan, content);
+            node.putSigned(chain, content);
 
             // Register-it locally and instant display.
             auto stamp = get_timestamp();
@@ -218,9 +218,9 @@ std::string input(const std::string& prompt)
     return std::string("");
 }
 
-size_t listen(dht::DhtRunner& node, std::string chan, map_type& map)
+size_t listen(dht::DhtRunner& node, std::string chain, map_type& map)
 {
-    std::future<size_t> token = node.listen(chan,
+    std::future<size_t> token = node.listen(chain,
         [&map](const std::vector<std::shared_ptr<dht::Value>>& values)
         {
             // For every value found...
@@ -244,7 +244,7 @@ size_t listen(dht::DhtRunner& node, std::string chan, map_type& map)
 
     auto v = token.get();
 //    disp("Starting listening to "
-//    + chan
+//    + chain
 //    + " with token "
 //    + std::to_string(v));
     return v;
