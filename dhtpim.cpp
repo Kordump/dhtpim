@@ -8,6 +8,8 @@
 
 #include <opendht.h>
 
+#include "tools.hpp"
+
 struct msg;
 template<size_t period> struct channel;
 template<size_t pool_size, size_t period> struct dhost;
@@ -17,9 +19,6 @@ using map_type = std::unordered_map<std::string, std::chrono::milliseconds>;
 
 // Nice display with VT100 terminal control escape sequences.
 void disp(std::string content);
-
-// Get timestamp in milliseconds.
-std::chrono::milliseconds get_timestamp();
 
 // Use GNU readline.
 std::string input(const std::string& prompt);
@@ -214,12 +213,6 @@ int main(int argc, char** argv)
     // Wait threads
     node.join();
     return 0;
-}
-
-std::chrono::milliseconds get_timestamp()
-{
-    return std::chrono::duration_cast<std::chrono::milliseconds>(
-            std::chrono::system_clock::now().time_since_epoch());
 }
 
 void disp(std::string content)

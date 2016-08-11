@@ -10,8 +10,11 @@ EXEC=dhtpim
 
 all: $(EXEC)
 
-dhtpim:
-	$(CC) $(LDFLAGS) $(CFLAGS) dhtpim.cpp -o dhtpim
+dhtpim: tools
+	$(CC) $(LDFLAGS) $(CFLAGS) *.o dhtpim.cpp -o dhtpim
+
+tools:
+	$(CC) $(CFLAGS) -c tools.cpp
 
 clean:
 	rm -v -f *.o *.gch *.gch.*
