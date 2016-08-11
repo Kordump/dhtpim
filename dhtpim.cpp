@@ -47,12 +47,8 @@ int main(int argc, char** argv)
         if(opt::args().interactive_flag)
             password = input("Password : ");
         else
-        {
-            std::cerr
-                << "No password provided, interactive mode disabled."
-                << std::endl;
-            exit(1);
-        }
+            verbose("Warning: No password provided\n"
+                "(Use interactive mode to prompt password input)");
 
     // Setup keychain
     keychain<> chain(chainame, password);
