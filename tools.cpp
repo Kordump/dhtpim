@@ -31,9 +31,9 @@ size_t listen(dht::DhtRunner& node, std::string chain, map_type& map)
         exit(1);
 
     auto v = token.get();
-//    disp("Starting listening to "
-//    + chain
-//    + " with token "
-//    + std::to_string(v));
+    verbose("Starting listening to "
+        + chain
+        + " with token "
+        + std::to_string(v) + ".");
     return v;
 }
