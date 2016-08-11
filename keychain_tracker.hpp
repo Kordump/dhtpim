@@ -47,13 +47,18 @@ struct keychain_tracker
         return holding;
     }
 
-    ~keychain_tracker()
+    void join()
     {
         if(this->holding)
         {
             this->holding = false;
             this->holder->join();
         }
+    }
+
+    ~keychain_tracker()
+    {
+        join();
     }
 
 private:

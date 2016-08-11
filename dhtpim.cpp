@@ -66,6 +66,7 @@ int main(int argc, char** argv)
     }
 
     // Wait threads
+    tracker.join();
     node.join();
     return 0;
 }
