@@ -39,5 +39,7 @@ Then, use the Makefile as usual :
 ```
 # Note on privacy
 
-As long you are using a strong password, dhtpim does provide some kind of
-privacy, but note that nothing is done to hide metadata.
+As long as you are using a strong password, dhtpim does provide some kind of
+privacy. b
+
+**Please note that nothing is done to hide metadata.**
