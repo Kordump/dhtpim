@@ -1,13 +1,28 @@
 #!/bin/bash
-echo "Usage: $0 <user> <chan> [<pass> <host> <port>]" > /dev/stderr
 
-# Arguments
+# Check args and environment
+
+if test $# -lt 2; then
+	echo "Usage: $0 <user> <chan> [<pass> <host> <port>]" > /dev/stderr
+	exit
+fi
+
+command -v unbuffer >/dev/null 2>&1 || {
+	echo >&2 "Command unbuffer required. Install the package expect before using this script."
+	echo >&2 "Aborting."
+	exit 1
+}
+
+
+# Arguments and path
 set -e
 user=${1:-anon}
 chan=${2:-chan}
 pass=${3:-QjBGYzZwNUJObXMyMjIrVzBwNXk1dz09Cg}
 host=${4:-bootstrap.ring.cx}
 port=${5:-4222}
+
+basedir=$(dirname "$0")
 
 # Named pipe
 pipe=.fifo-pipe
@@ -28,7 +43,7 @@ function answer-ping()
 }
 
 # Running the server via netcat
-cmd="./dhtpim -v -u $user -c $chan -p $pass -b $host -r $port"
+cmd="${basedir}/dhtpim -v -u $user -c $chan -p $pass -b $host -r $port"
 echo "$cmd" > /dev/stderr
 unbuffer cat $pipe | \
 	( while true;
