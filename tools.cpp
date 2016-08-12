@@ -28,7 +28,16 @@ size_t listen(dht::DhtRunner& node, std::string chain, map_type& map)
         });
 
     if(token.wait_for(std::chrono::seconds(1)) != std::future_status::ready)
-        exit(1);
+    {
+        verbose("Warning: Could not create a listener since 1000ms.");
+        verbose("         Trying again for 30s...");
+
+        if(token.wait_for(std::chrono::seconds(30))
+            != std::future_status::ready)
+            verbose("Error: Failure.");
+        else
+            verbose("         Done.");
+    }
 
     auto v = token.get();
     verbose("Starting listening to "

@@ -1,4 +1,5 @@
 CC=clang++
+CCLEGACY=clang
 CSTD=-std=c++14
 CWARN=-Wall -Wextra -pedantic
 CEXTRA=-g
@@ -24,7 +25,7 @@ opt:
 
 genopt:
 	gengetopt -i dhtpim.ggo
-	gcc -c cmdline.c
+	$(CCLEGACY) -c cmdline.c
 
 clean-genopt:
 	rm -v -f cmdline.h cmdline.c
