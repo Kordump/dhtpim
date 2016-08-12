@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/bin/sh
 
 # Check args and environment
-
 if test $# -lt 2; then
 	echo "Usage: $0 <user> <chan> [<pass> <host> <port>]" > /dev/stderr
 	exit
@@ -29,7 +28,7 @@ pipe=.fifo-pipe
 rm -f $pipe
 mkfifo $pipe
 
-function answer-ping()
+function answer_ping()
 {
     while true;
     do read line || break
@@ -50,7 +49,7 @@ unbuffer -p cat $pipe | \
         do ( echo -e ":host NOTICE Auth :connected to dhtpim irc\n:host 001 $user :connect to dhtpim, 2\n:$user!$user@$user JOIN :#$chan" ; cat ) | \
             unbuffer -p nc -l -p 6667 ;
         done ) | \
-    answer-ping | \
+    answer_ping | \
 	unbuffer -p grep "^PRIVMSG #$chan :" | \
 	unbuffer -p sed 's/^PRIVMSG [^ ]* :\([^\n]*\)\n*$/\1/'| \
 	unbuffer -p grep -v '^$' | \
