@@ -7,26 +7,23 @@ CEXTRA=-g
 CFLAGS=$(CSTD) $(CWARN) $(CEXTRA)
 LDFLAGS=-lgnutls -lopendht -lreadline -pthread
 
-SRC=./src/
-BIN=./bin/
+EXEC=../bin/dhtpim
 
-EXEC=dhtpim
+all: cmdline.o $(EXEC)
 
-all: genopt $(EXEC)
+$(EXEC): io_tools.o tools.o opt.o
+	$(CC) $(LDFLAGS) $(CFLAGS) *.o dhtpim.cpp -o $@
 
-dhtpim: io_tools tools opt
-	$(CC) $(LDFLAGS) $(CFLAGS) *.o dhtpim.cpp -o ../$(BIN)dhtpim
+io_tools.o: io_tools.cpp
+	$(CC) $(CFLAGS) -c $^
 
-io_tools:
-	$(CC) $(CFLAGS) -c io_tools.cpp
+tools.o: tools.cpp
+	$(CC) $(CFLAGS) -c $^
 
-tools:
-	$(CC) $(CFLAGS) -c tools.cpp
+opt.o: opt.cpp
+	$(CC) $(CFLAGS) -c $^
 
-opt:
-	$(CC) $(CFLAGS) -c opt.cpp
-
-genopt:
+cmdline.o: cmdline.c dhtpim.ggo
 	gengetopt -i dhtpim.ggo
 	$(CCLEGACY) -c cmdline.c
 
@@ -38,4 +35,4 @@ clean: clean-genopt
 
 mr_proper: clean
 	rm -v -f *.out
-	rm -v -f $(EXEC) ../$(BIN)$(EXEC)
+	rm -v -f $(EXEC)
