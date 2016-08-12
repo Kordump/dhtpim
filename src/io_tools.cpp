@@ -2,11 +2,6 @@
 
 void disp(std::string content, std::ostream& stream)
 {
-    if(opt::args().interactive_flag)
-        stream << "\r\n"
-        "\x1b[A\x1b[A " << content << "\n"
-        "\x1b[2K" << std::endl;
-    else
         stream << content << std::endl;
 }
 
