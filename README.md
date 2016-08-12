@@ -1,7 +1,6 @@
 # dhtpim 0.0.1
 
 Simple OpenDHT private instant messaging.
-
 ```
 Usage: ./dhtpim -u <username> -c <keychain> [-p <password>]
 
@@ -18,7 +17,7 @@ Usage: ./dhtpim -u <username> -c <keychain> [-p <password>]
                                  (default=`bootstrap.ring.cx')
 ```
 
-# Build
+# Quick setup
 
 Check if `opendht 0.6.3` and `gengetopt` are installed on your machine.
 
@@ -35,11 +34,29 @@ For instance, on archlinux :
 Then, use the Makefile as usual :
 ```
     make
-    ./dhtpim -u anon -c keychan -p secret
+    ./dhtpim -u Nickname -c Channel -p Password
 ```
+
+# IRC support
+
+You can start a minimal IRC wrapper with `irc.sh` on your local machine.
+
+For exemple :
+```/bin/bash
+    ./irc.sh Nickname Channel Password 2> /dev/null &
+    irssi -c localhost
+    killall irc.sh
+```
+
+Note that this wrapper is not suitable for public usage.
+
 # Note on privacy
 
 As long as you are using a strong password, dhtpim does provide some kind of
-privacy. b
+privacy. However, please note that dhtpim does not provide :
+ - Perfect Forward Secrecy.
+ - Perfect Anonymity.
+ - Metadata leaks.
 
-**Please note that nothing is done to hide metadata.**
+Enjoy !
+
