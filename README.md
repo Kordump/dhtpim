@@ -34,6 +34,7 @@ For instance, on archlinux :
 Then, use the Makefile as usual :
 ```
     make
+    cd bin
     ./dhtpim -u Nickname -c Channel -p Password
 ```
 
@@ -43,20 +44,24 @@ You can start a minimal IRC wrapper with `irc.sh` on your local machine.
 
 For exemple :
 ```/bin/bash
+    cd bin
     ./irc.sh Nickname Channel Password 2> /dev/null &
     irssi -c localhost
     killall irc.sh
 ```
 
-Note that this wrapper is not suitable for public usage.
+Note :
+ - This wrapper is not suitable for public usage.
+ - The command `unbuffer` is owned by `expect` package.
 
 # Note on privacy
 
 As long as you are using a strong password, dhtpim does provide some kind of
-privacy. However, please note that dhtpim does not provide :
+privacy. However, please note that dhtpim does not provide and will not provide
+any of the following guarantees :
  - Perfect Forward Secrecy.
  - Perfect Anonymity.
- - Metadata leaks.
+ - No Metadata leaks.
 
 Enjoy !
 
