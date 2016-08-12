@@ -8,11 +8,11 @@ if test $# -lt 2; then
 fi
 
 command -v unbuffer >/dev/null 2>&1 || {
-	echo >&2 "Command unbuffer required. Install the package expect before using this script."
-	echo >&2 "Aborting."
-	exit 1
+    function unbuffer()
+    {
+        stdbuf -i0 -o0 -e0 "${@:2}"
+    }
 }
-
 
 # Arguments and path
 set -e
@@ -45,7 +45,7 @@ function answer-ping()
 # Running the server via netcat
 cmd="${basedir}/dhtpim -v -u $user -c $chan -p $pass -b $host -r $port"
 echo "$cmd" > /dev/stderr
-unbuffer cat $pipe | \
+unbuffer -p cat $pipe | \
 	( while true;
         do ( echo -e ":host NOTICE Auth :connected to dhtpim irc\n:host 001 $user :connect to dhtpim, 2\n:$user!$user@$user JOIN :#$chan" ; cat ) | \
             unbuffer -p nc -l -p 6667 ;
